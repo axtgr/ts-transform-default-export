@@ -46,23 +46,46 @@ function createExportAssignmentForNode(node: ts.Node, isExportEquals = false) {
 function visitor(
   isDeclarationFile: boolean,
   keepOriginalExports: boolean,
+  context: ts.TransformationContext,
   node: ts.Node
 ): ts.Node | ts.Node[] | undefined {
   if (ts.isExportDeclaration(node)) {
     // `export { foo as default, bar, baz as qux }` → `export = foo`
 
-    let specifier = (node.exportClause as any)?.elements?.find(
-      (n: ts.Node) =>
-        ts.isExportSpecifier(n) && n.name.escapedText === 'default' && n.propertyName
+    let hasOtherSpecifiers = false
+    let defaultSpecifier: ts.ExportSpecifier | undefined
+
+    node = ts.visitEachChild(
+      node,
+      (node) => {
+        return ts.visitEachChild(
+          node,
+          (node) => {
+            if (
+              ts.isExportSpecifier(node) &&
+              node.name.escapedText === 'default' &&
+              node.propertyName
+            ) {
+              defaultSpecifier = node
+              return keepOriginalExports ? node : undefined
+            }
+
+            hasOtherSpecifiers = true
+            return node
+          },
+          context
+        )
+      },
+      context
     )
 
-    if (!specifier) {
+    if (!defaultSpecifier) {
       return node
     }
 
-    let exportAssignment = createExportAssignmentForNode(specifier, true)
+    let exportAssignment = createExportAssignmentForNode(defaultSpecifier, true)
 
-    if (keepOriginalExports) {
+    if (keepOriginalExports || hasOtherSpecifiers) {
       return [node, exportAssignment]
     }
 
@@ -123,7 +146,8 @@ function transformDefaultExport(
         visitor.bind(
           null,
           file.isDeclarationFile,
-          Boolean(options.keepOriginalExports)
+          Boolean(options.keepOriginalExports),
+          context
         ),
         context
       )
