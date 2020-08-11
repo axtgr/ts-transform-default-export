@@ -45,7 +45,7 @@ function createExportAssignmentForNode(node: ts.Node, isExportEquals = false) {
 
 function visitor(
   isDeclarationFile: boolean,
-  keepOriginalExports: boolean,
+  keepOriginalExport: boolean,
   context: ts.TransformationContext,
   node: ts.Node
 ): ts.Node | ts.Node[] | undefined {
@@ -67,7 +67,7 @@ function visitor(
               node.propertyName
             ) {
               defaultSpecifier = node
-              return keepOriginalExports ? node : undefined
+              return keepOriginalExport ? node : undefined
             }
 
             hasOtherSpecifiers = true
@@ -85,7 +85,7 @@ function visitor(
 
     let exportAssignment = createExportAssignmentForNode(defaultSpecifier, true)
 
-    if (keepOriginalExports || hasOtherSpecifiers) {
+    if (keepOriginalExport || hasOtherSpecifiers) {
       return [node, exportAssignment]
     }
 
@@ -104,7 +104,7 @@ function visitor(
       createExportAssignmentForNode(node, true),
     ]
 
-    if (keepOriginalExports) {
+    if (keepOriginalExport) {
       nodes.push(createExportAssignmentForNode(node))
     }
 
@@ -116,7 +116,7 @@ function visitor(
 
     let equalsAssignment = createExportAssignmentForNode(node.expression, true)
 
-    if (keepOriginalExports) {
+    if (keepOriginalExport) {
       return [node, equalsAssignment]
     }
 
@@ -127,7 +127,7 @@ function visitor(
 }
 
 interface TransformerOptions {
-  keepOriginalExports?: boolean
+  keepOriginalExport?: boolean
 }
 
 function transformDefaultExport(
@@ -146,7 +146,7 @@ function transformDefaultExport(
         visitor.bind(
           null,
           file.isDeclarationFile,
-          Boolean(options.keepOriginalExports),
+          Boolean(options.keepOriginalExport),
           context
         ),
         context
