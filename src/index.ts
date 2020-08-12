@@ -128,7 +128,7 @@ function visitor(
 
 interface TransformerOptions {
   /**
-   * Don't remove the original default export from the code
+   * Whether to keep the original default export in the code when transforming it
    *
    * ```
    * // When false:
@@ -145,7 +145,7 @@ interface TransformerOptions {
   keepOriginalExport?: boolean
 
   /**
-   * Don't throw when there are named exports in the module along with the default one
+   * Whether to throw when there are named exports in the module along with the default one
    *
    * ```
    * // When false:
@@ -164,7 +164,7 @@ interface TransformerOptions {
 
 /**
  * Transforms default exports to `export =` so that they become `module.exports =`
- * when transpiled to CommonJS
+ * when transpiled to CommonJS or UMD
  *
  * ```
  * export { foo as default }
