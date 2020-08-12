@@ -190,7 +190,10 @@ function transformDefaultExport(
 
   return (context) => {
     return (file) => {
-      if (rootFiles.indexOf(Path.normalize(file.fileName)) === -1) {
+      if (
+        rootFiles.indexOf(file.fileName) === -1 &&
+        rootFiles.indexOf(Path.normalize(file.fileName)) === -1
+      ) {
         return file
       }
 
