@@ -10,6 +10,5 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
-      - run: npm install -g pnpm
-      - run: pnpm install
-      - run: pnpm run prepack
+      - uses: jaid/action-npm-install@v1.2.1
+      - run: npm run prepack
