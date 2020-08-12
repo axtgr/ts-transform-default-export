@@ -1,5 +1,7 @@
 # ts-transform-default-export
 
+![CI](https://github.com/axtgr/ts-transform-default-export/workflows/CI/badge.svg)
+
 A TypeScript transformer that converts default exports to their CommonJS counterparts:
 
 `export { foo as default }` → `export = foo`
