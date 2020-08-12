@@ -128,17 +128,49 @@ function visitor(
 
 interface TransformerOptions {
   keepOriginalExport?: boolean
+  allowNamedExports?: boolean
 }
 
 function transformDefaultExport(
   program: ts.Program,
   options: TransformerOptions = {}
 ): ts.TransformerFactory<ts.SourceFile> {
+  let typeChecker = program.getTypeChecker()
   let rootFiles = program.getRootFileNames()
+
   return (context) => {
     return (file) => {
       if (rootFiles.indexOf(Path.normalize(file.fileName)) === -1) {
         return file
+      }
+
+      let moduleSymbol = typeChecker.getSymbolAtLocation(file)
+
+      if (!moduleSymbol) {
+        return file
+      }
+
+      let hasDefaultExport = false
+      let hasNamedExports = false
+
+      typeChecker.getExportsOfModule(moduleSymbol).forEach((exp) => {
+        if (exp.escapedName === 'default') {
+          hasDefaultExport = true
+        } else {
+          hasNamedExports = true
+        }
+      })
+
+      if (!hasDefaultExport) {
+        return file
+      }
+
+      if (!options.allowNamedExports && hasNamedExports) {
+        throw new Error(
+          `Unable to transform the default export of the module "${file.fileName}".` +
+            ' The module has named exports, which could be lost during the transformation.' +
+            ' To ignore this, set the `allowNamedExports` option to `true`'
+        )
       }
 
       return ts.visitEachChild(
