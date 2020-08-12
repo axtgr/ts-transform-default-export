@@ -2,7 +2,7 @@
   "name": "ts-transform-default-export",
   "version": "0.0.0",
   "license": "ISC",
-  "description": "`export default foo` → `module.exports = foo`",
+  "description": "`export default foo` → `export = foo` → `module.exports = foo`",
   "author": "Alex Schneider <me@schneider.ax>",
   "repository": "https://github.com/axtgr/ts-transform-default-export",
   "keywords": [

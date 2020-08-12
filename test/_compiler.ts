@@ -1,6 +1,6 @@
 import Path from 'path'
 import ts from 'typescript'
-import transformerFactory, { TransformerOptions } from '../src'
+import transformDefaultExport, { TransformerOptions } from '../src'
 
 const COMPILER_OPTIONS: ts.CompilerOptions = {
   noImplicitUseStrict: true,
@@ -29,11 +29,11 @@ function transform(sourceText: string, options?: TransformerOptions) {
   host.writeFile = (fileName: string, data: string) => {
     let fileType: keyof typeof result =
       Path.extname(fileName) === '.js' ? 'module' : 'declaration'
-    result[fileType] = String(data).trim()
+    result[fileType] = data.trim()
   }
 
   let program = ts.createProgram([FILE_NAME], COMPILER_OPTIONS, host)
-  let transformer = transformerFactory(program, options)
+  let transformer = transformDefaultExport(program, options)
   let customTransformers = {
     before: [transformer],
     afterDeclarations: [transformer],
