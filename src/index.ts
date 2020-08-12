@@ -127,10 +127,60 @@ function visitor(
 }
 
 interface TransformerOptions {
+  /**
+   * Don't remove the original default export from the code
+   *
+   * ```
+   * // When false:
+   * export { foo as default }
+   * //=> export = foo
+   * ```
+   *
+   * ```
+   * // When true:
+   * export { foo as default, bar }
+   * //=> export { foo as default }; export = foo
+   * ```
+   */
   keepOriginalExport?: boolean
+
+  /**
+   * Don't throw when there are named exports in the module along with the default one
+   *
+   * ```
+   * // When false:
+   * export { foo as default, bar }
+   * //=> Error
+   * ```
+   *
+   * ```
+   * // When true:
+   * export { foo as default, bar }
+   * //=> export { bar }; export = foo
+   * ```
+   */
   allowNamedExports?: boolean
 }
 
+/**
+ * Transforms default exports to `export =` so that they become `module.exports =`
+ * when transpiled to CommonJS
+ *
+ * ```
+ * export { foo as default }
+ * //=> export = foo
+ * ```
+ *
+ * ```
+ * export default foo
+ * //=> export = foo
+ * ```
+ *
+ * ```
+ * export default function foo() {}
+ * //=> function foo() {}; export = foo
+ * ```
+ */
 function transformDefaultExport(
   program: ts.Program,
   options: TransformerOptions = {}
