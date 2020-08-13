@@ -1,15 +1,9 @@
 # ts-transform-default-export
 
-![CI](https://github.com/axtgr/ts-transform-default-export/workflows/CI/badge.svg)
+[![Buy me a beer](https://img.shields.io/badge/%F0%9F%8D%BA-Buy%20me%20a%20beer-red?style=flat)](https://www.buymeacoffee.com/axtgr)
+[![CI](https://img.shields.io/github/workflow/status/axtgr/ts-transform-default-export/CI?label=CI&logo=github)](https://github.com/axtgr/ts-transform-default-export/actions)
 
-A TypeScript transformer that converts default exports to their CommonJS counterparts:
-
-`export { foo as default }` → `export = foo`
-
-When such a module is then transpiled to CommonJS or UMD, the export will become `module.exports = foo`,
-making the module consumable by `require('foo')` instead of `require('foo').default`.
-
-The transformer is able to convert the following types of exports:
+A TypeScript transformer that converts a default export such as one of these:
 
 ```ts
 export default function foo() {}
@@ -17,11 +11,14 @@ export default foo
 export { foo as default }
 ```
 
-Re-exports from other modules are not supported:
+to its CommonJS counterpart:
 
 ```ts
-export * from 'bar'
+export = foo
 ```
+
+When such a module is then transpiled to CommonJS or UMD, the export will become `module.exports = foo`,
+making the module consumable by `require('foo')` instead of `require('foo').default`.
 
 Only files that match the `files` or `include` property of your `tsconfig.json` will be transformed.
 This is an intentional restriction to make it possible to control which files are processed.
