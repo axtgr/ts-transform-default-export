@@ -220,7 +220,7 @@ function transformDefaultExport(
 
       if (!options.allowNamedExports && hasNamedExports) {
         throw new Error(
-          `Unable to transform the default export of the module "${file.fileName}".` +
+          `(ts-transform-default-export) Unable to transform the default export of the module "${file.fileName}".` +
             ' The module has named exports, which could be lost during the transformation.' +
             ' To ignore this, set the `allowNamedExports` option to `true`'
         )
