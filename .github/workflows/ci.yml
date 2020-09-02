@@ -1,14 +1,27 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  workflow_dispatch:
+  push:
+    branches: master
+  pull_request:
+    branches: master
 
 jobs:
-  main:
-    runs-on: ubuntu-latest
+  ci:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node: [12]
+    runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - name: Check out the repository
+        uses: actions/checkout@v2
+      - name: Install Node.js
+        uses: actions/setup-node@v1
         with:
-          node-version: 12
-      - uses: jaid/action-npm-install@v1.2.1
-      - run: npm run prepack
+          node-version: ${{ matrix.node }}
+      - name: Install the dependencies using the package manager whose lock file is in the root dir
+        uses: jaid/action-npm-install@v1.2.1
+      - name: Lint, build and test
+        run: npm run prepack

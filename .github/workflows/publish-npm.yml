@@ -1,4 +1,4 @@
-name: Create a GitHub Release
+name: Publish to NPM
 
 on:
   workflow_dispatch:
@@ -6,7 +6,7 @@ on:
     tags: 'v*.*.*'
 
 jobs:
-  release:
+  publish:
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -25,10 +25,15 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: master
-      - name: Create a GitHub release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Node.js
+        uses: actions/setup-node@v1
         with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
+          node-version: ${{ matrix.node }}
+          registry-url: https://registry.npmjs.org/
+      - name: Install the dependencies using the package manager whose lock file is in the root dir
+        uses: jaid/action-npm-install@v1.2.1
+      - name: Publish the package
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
