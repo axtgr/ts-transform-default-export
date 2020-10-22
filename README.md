@@ -21,7 +21,7 @@ export = foo
 When such a module is then transpiled to CommonJS or UMD, the export will become `module.exports = foo`,
 making the module consumable by `require('foo')` instead of `require('foo').default`.
 
-This is especially useful when making a package compatible with both CommonJS and ES modules.
+This is useful when making a package compatible with both CommonJS and ES modules.
 
 ## Installation
 
@@ -72,10 +72,6 @@ are processed.
 
 ### Example `rollup.config.js` with `rollup-plugin-ts`
 
-This configuration is interesting in that it produces two bundled modules (`index.js`
-for CommonJS and `index.mjs` for ESM), two source maps and a _single_ declaration file
-(`index.d.ts`) that is compatible with _both_ the modules.
-
 ```js
 import typescript from 'rollup-plugin-ts'
 import transformDefaultExport from 'ts-transform-default-export'
@@ -88,20 +84,23 @@ export default {
       format: 'cjs',
       sourcemap: true,
       exports: 'default',
+      entryFileNames: '[name].js',
+      plugins: [],
     },
     {
       dir: 'dist',
-      format: 'es',
+      format: 'umd',
       sourcemap: true,
-      entryFileNames: '[name].mjs',
+      name: 'lib',
+      exports: 'default',
+      entryFileNames: '[name].umd.js',
+      plugins: [terser()],
     },
   ],
   plugins: [
     typescript({
       transformers: ({ program }) => ({
-        afterDeclarations: transformDefaultExport(program, {
-          keepOriginalExport: true,
-        }),
+        afterDeclarations: transformDefaultExport(program),
       }),
     }),
   ],
