@@ -1,7 +1,7 @@
 {
   "name": "ts-transform-default-export",
   "version": "1.0.2",
-  "description": "`export default foo` → `export = foo` → `module.exports = foo`",
+  "description": "export default foo → export = foo → module.exports = foo",
   "author": "Alex Schneider <me@schneider.ax>",
   "license": "ISC",
   "keywords": [
